@@ -4,6 +4,21 @@ import { useStore } from "@/context/StoreContext";
 import { useToast } from "@/hooks/use-toast";
 import { LogOut, Plus, Trash2, Edit2, Save, X, Star, Eye } from "lucide-react";
 import type { Product, BlogPost } from "@/data/products";
+import versaceEros from "@/assets/versace-eros.jpg";
+import diorSauvage from "@/assets/dior-sauvage.jpg";
+import amberOud from "@/assets/amber-oud.jpg";
+import bleuChanel from "@/assets/bleu-chanel.jpg";
+import tomFord from "@/assets/tom-ford.jpg";
+import yslPerfume from "@/assets/ysl-perfume.jpg";
+
+const fallbackImageByProductId: Record<string, string> = {
+  "1": versaceEros,
+  "2": diorSauvage,
+  "3": amberOud,
+  "4": bleuChanel,
+  "5": tomFord,
+  "6": yslPerfume,
+};
 
 const Admin = () => {
   const store = useStore();
@@ -214,7 +229,16 @@ const Admin = () => {
             <div className="space-y-3">
               {store.products.map((p) => (
                 <div key={p.id} className="bg-card border border-border rounded-lg p-4 flex items-center gap-4">
-                  <img src={p.imageUrl} alt={p.name} className="w-16 h-16 object-cover rounded-lg" />
+                  <img
+                    src={p.imageUrl || fallbackImageByProductId[p.id] || "/placeholder.svg"}
+                    alt={p.name}
+                    className="w-16 h-16 object-cover rounded-lg"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      img.onerror = null;
+                      img.src = fallbackImageByProductId[p.id] || "/placeholder.svg";
+                    }}
+                  />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h4 className="font-heading text-sm font-semibold text-foreground">{p.name}</h4>

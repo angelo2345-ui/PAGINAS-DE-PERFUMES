@@ -2,11 +2,26 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import type { Product } from "@/data/products";
+import versaceEros from "@/assets/versace-eros.jpg";
+import diorSauvage from "@/assets/dior-sauvage.jpg";
+import amberOud from "@/assets/amber-oud.jpg";
+import bleuChanel from "@/assets/bleu-chanel.jpg";
+import tomFord from "@/assets/tom-ford.jpg";
+import yslPerfume from "@/assets/ysl-perfume.jpg";
 
 interface Props {
   product: Product;
   index?: number;
 }
+
+const fallbackImageByProductId: Record<string, string> = {
+  "1": versaceEros,
+  "2": diorSauvage,
+  "3": amberOud,
+  "4": bleuChanel,
+  "5": tomFord,
+  "6": yslPerfume,
+};
 
 const ProductCard: React.FC<Props> = ({ product, index = 0 }) => (
   <motion.div
@@ -19,10 +34,15 @@ const ProductCard: React.FC<Props> = ({ product, index = 0 }) => (
       <div className="product-card-hover bg-card rounded-lg overflow-hidden border border-border/50">
         <div className="relative aspect-square overflow-hidden">
           <img
-            src={product.imageUrl}
+            src={product.imageUrl || fallbackImageByProductId[product.id] || "/placeholder.svg"}
             alt={product.name}
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            onError={(e) => {
+              const img = e.currentTarget;
+              img.onerror = null;
+              img.src = fallbackImageByProductId[product.id] || "/placeholder.svg";
+            }}
           />
           {product.isTopSeller && (
             <div className="absolute top-3 left-3 flex items-center gap-1 bg-primary/90 backdrop-blur-sm px-3 py-1 rounded-full">

@@ -2,6 +2,21 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Star, MessageCircle } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
+import versaceEros from "@/assets/versace-eros.jpg";
+import diorSauvage from "@/assets/dior-sauvage.jpg";
+import amberOud from "@/assets/amber-oud.jpg";
+import bleuChanel from "@/assets/bleu-chanel.jpg";
+import tomFord from "@/assets/tom-ford.jpg";
+import yslPerfume from "@/assets/ysl-perfume.jpg";
+
+const fallbackImageByProductId: Record<string, string> = {
+  "1": versaceEros,
+  "2": diorSauvage,
+  "3": amberOud,
+  "4": bleuChanel,
+  "5": tomFord,
+  "6": yslPerfume,
+};
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -33,7 +48,16 @@ const ProductDetail = () => {
             transition={{ duration: 0.6 }}
             className="relative aspect-square rounded-xl overflow-hidden glow-gold"
           >
-            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+            <img
+              src={product.imageUrl || fallbackImageByProductId[product.id] || "/placeholder.svg"}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const img = e.currentTarget;
+                img.onerror = null;
+                img.src = fallbackImageByProductId[product.id] || "/placeholder.svg";
+              }}
+            />
             {product.isTopSeller && (
               <div className="absolute top-4 left-4 flex items-center gap-1 bg-primary/90 backdrop-blur-sm px-4 py-2 rounded-full">
                 <Star size={14} className="text-primary-foreground fill-current" />
