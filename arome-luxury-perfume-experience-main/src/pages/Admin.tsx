@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut, Plus, Trash2, Edit2, Save, X, Star, Eye } from "lucide-react";
+import { LogOut, Plus, Trash2, Edit2, Save, X, Star } from "lucide-react";
 import type { Product, BlogPost } from "@/data/products";
 import versaceEros from "@/assets/versace-eros.jpg";
 import diorSauvage from "@/assets/dior-sauvage.jpg";
@@ -27,7 +27,7 @@ const Admin = () => {
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [tab, setTab] = useState<"products" | "blog" | "contacts">("products");
+  const [tab, setTab] = useState<"products" | "blog">("products");
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const [editingPost, setEditingPost] = useState<Partial<BlogPost> | null>(null);
 
@@ -161,10 +161,10 @@ const Admin = () => {
         </div>
 
         <div className="flex gap-2 mb-8">
-          {(["products", "blog", "contacts"] as const).map((t) => (
+          {(["products", "blog"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-4 py-2 rounded-lg text-sm font-body transition-all ${tab === t ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-              {t === "products" ? "Productos" : t === "blog" ? "Blog" : "Mensajes"}
+              {t === "products" ? "Productos" : "Blog"}
             </button>
           ))}
         </div>
@@ -284,21 +284,6 @@ const Admin = () => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {tab === "contacts" && (
-          <div className="space-y-3">
-            {store.contacts.length === 0 && <p className="text-muted-foreground text-center py-10">No hay mensajes aún.</p>}
-            {store.contacts.map((c) => (
-              <div key={c.id} className="bg-card border border-border rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <h4 className="font-heading text-sm font-semibold text-foreground">{c.name}</h4>
-                  <span className="text-muted-foreground text-xs">({c.email})</span>
-                </div>
-                <p className="text-muted-foreground text-sm font-body">{c.message}</p>
-              </div>
-            ))}
           </div>
         )}
       </div>
