@@ -11,6 +11,7 @@ const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [tab, setTab] = useState<"products" | "blog" | "contacts">("products");
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const [editingPost, setEditingPost] = useState<Partial<BlogPost> | null>(null);
@@ -87,6 +88,37 @@ const Admin = () => {
     }
   };
 
+  const uploadProductImage = async (file: File) => {
+    if (!editingProduct) return;
+    setIsUploadingImage(true);
+    try {
+      if (!file.type.startsWith("image/")) {
+        toast({ title: "Error", description: "Selecciona un archivo de imagen.", variant: "destructive" });
+        return;
+      }
+
+      const maxBytes = 1024 * 1024 * 2;
+      if (file.size > maxBytes) {
+        toast({ title: "Error", description: "La imagen es muy pesada. Usa una de máximo 2MB.", variant: "destructive" });
+        return;
+      }
+
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("file-read-failed"));
+        reader.readAsDataURL(file);
+      });
+
+      setEditingProduct({ ...editingProduct, imageUrl: base64 });
+      toast({ title: "Imagen cargada", description: "Se guardará en Base64." });
+    } catch {
+      toast({ title: "Error", description: "No se pudo cargar la imagen.", variant: "destructive" });
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const savePost = async () => {
     if (!editingPost?.title) return;
     try {
@@ -135,8 +167,30 @@ const Admin = () => {
                     className="bg-secondary border border-border rounded-lg px-4 py-2 text-foreground text-sm font-body" />
                   <input placeholder="Precio" type="number" value={editingProduct.price || ""} onChange={(e) => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })}
                     className="bg-secondary border border-border rounded-lg px-4 py-2 text-foreground text-sm font-body" />
-                  <input placeholder="URL Imagen" value={editingProduct.imageUrl || ""} onChange={(e) => setEditingProduct({ ...editingProduct, imageUrl: e.target.value })}
-                    className="bg-secondary border border-border rounded-lg px-4 py-2 text-foreground text-sm font-body" />
+                  <div className="flex gap-2">
+                    <input
+                      placeholder="URL Imagen"
+                      value={editingProduct.imageUrl || ""}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, imageUrl: e.target.value })}
+                      className="flex-1 bg-secondary border border-border rounded-lg px-4 py-2 text-foreground text-sm font-body"
+                    />
+                    {!editingProduct.imageUrl && (
+                      <label className="btn-outline-gold rounded-lg text-sm inline-flex items-center justify-center px-4 cursor-pointer">
+                        {isUploadingImage ? "Subiendo..." : "Subir"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={isUploadingImage}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            e.target.value = "";
+                            if (file) void uploadProductImage(file);
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
                   <select value={editingProduct.category || "Hombre"} onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
                     className="bg-secondary border border-border rounded-lg px-4 py-2 text-foreground text-sm font-body">
                     <option>Hombre</option><option>Mujer</option><option>Unisex</option>
