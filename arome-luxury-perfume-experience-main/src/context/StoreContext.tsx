@@ -169,7 +169,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const login = async (email: string, password: string) => {
-    if (!auth) return false;
+    if (!auth) throw new Error("firebase-not-configured");
     const result = await signInWithEmailAndPassword(auth, email, password);
     if (adminEmail && result.user.email !== adminEmail) {
       await signOut(auth);
@@ -181,7 +181,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const logout = async () => {
-    if (!auth) return;
+    if (!auth) throw new Error("firebase-not-configured");
     await signOut(auth);
     setIsAdmin(false);
   };

@@ -32,7 +32,28 @@ const Admin = () => {
               if (ok) toast({ title: "¡Bienvenido!" });
               else toast({ title: "Error", description: "No tienes permisos de admin.", variant: "destructive" });
             } catch (err) {
-              toast({ title: "Error", description: "Credenciales incorrectas o Firebase no configurado.", variant: "destructive" });
+              const anyErr = err as { code?: string; message?: string };
+              const code = typeof anyErr?.code === "string" ? anyErr.code : undefined;
+              const message = typeof anyErr?.message === "string" ? anyErr.message : undefined;
+
+              const known =
+                code === "auth/unauthorized-domain"
+                  ? "Dominio no autorizado. Agrega tu dominio de Vercel en Firebase > Authentication > Settings > Authorized domains."
+                  : code === "auth/operation-not-allowed"
+                    ? "Email/Password no está habilitado. Actívalo en Firebase > Authentication > Sign-in method."
+                    : code === "auth/invalid-api-key" || code === "auth/invalid-credential"
+                      ? "Config de Firebase inválida. Revisa las variables VITE_FIREBASE_* en Vercel."
+                      : code === "auth/network-request-failed"
+                        ? "Error de red. Intenta de nuevo."
+                        : message === "firebase-not-configured"
+                          ? "Firebase no está configurado en Vercel. Agrega las variables VITE_FIREBASE_* y redeploy."
+                          : undefined;
+
+              toast({
+                title: "Error",
+                description: known || (code ? `Firebase: ${code}` : "No se pudo iniciar sesión."),
+                variant: "destructive",
+              });
             } finally {
               setIsLoggingIn(false);
             }
