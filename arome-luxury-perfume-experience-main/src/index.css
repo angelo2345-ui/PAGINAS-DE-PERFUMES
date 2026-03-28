@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 213 94% 44%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 213 100% 96%;
+    --accent-foreground: 213 94% 38%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 213 94% 44%;
+
+    --radius: 0.5rem;
+
+    --gold: 213 94% 44%;
+    --gold-light: 213 94% 60%;
+    --gold-dark: 213 94% 34%;
+    --surface: 0 0% 100%;
+    --surface-hover: 210 40% 96.1%;
+
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Outfit', sans-serif;
+    --font-accent: 'Cormorant Garamond', serif;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 213 94% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 213 94% 44%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--gold-light)), hsl(var(--gold)), hsl(var(--gold-dark)));
+  }
+
+  .border-gradient-gold {
+    border-image: linear-gradient(135deg, hsl(var(--gold-light)), hsl(var(--gold-dark))) 1;
+  }
+
+  .bg-gradient-dark {
+    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(210 40% 98%) 100%);
+  }
+
+  .bg-gradient-gold {
+    background: linear-gradient(135deg, hsl(var(--gold-dark)), hsl(var(--gold)), hsl(var(--gold-light)));
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 30px -5px hsl(var(--gold) / 0.3);
+  }
+
+  .glow-gold-sm {
+    box-shadow: 0 0 15px -3px hsl(var(--gold) / 0.2);
+  }
+
+  .shadow-luxury {
+    box-shadow: 0 25px 60px -12px hsl(0 0% 0% / 0.6);
+  }
+
+  .font-accent {
+    font-family: var(--font-accent);
+  }
+
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  .line-gold {
+    @apply h-px w-16;
+    background: linear-gradient(90deg, transparent, hsl(var(--gold)), transparent);
+  }
+
+  .product-card-hover {
+    @apply transition-all duration-500;
+  }
+
+  .product-card-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px -10px hsl(var(--gold) / 0.15), 0 0 20px -5px hsl(var(--gold) / 0.1);
+  }
+
+  .btn-premium {
+    @apply relative overflow-hidden px-8 py-3 font-body font-medium tracking-wider uppercase text-sm;
+    background: linear-gradient(135deg, hsl(var(--gold-dark)), hsl(var(--gold)), hsl(var(--gold-light)));
+    color: hsl(var(--background));
+    transition: all 0.4s ease;
+  }
+
+  .btn-premium:hover {
+    box-shadow: 0 0 30px -5px hsl(var(--gold) / 0.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline-gold {
+    @apply relative overflow-hidden px-8 py-3 font-body font-medium tracking-wider uppercase text-sm border;
+    border-color: hsl(var(--gold));
+    color: hsl(var(--gold));
+    transition: all 0.4s ease;
+  }
+
+  .btn-outline-gold:hover {
+    background: hsl(var(--gold) / 0.1);
+    box-shadow: 0 0 20px -5px hsl(var(--gold) / 0.3);
+  }
+
+  .nav-link {
+    @apply relative font-body text-sm tracking-wider uppercase;
+    color: hsl(var(--foreground) / 0.7);
+    transition: color 0.3s ease;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-px scale-x-0 origin-right;
+    background: hsl(var(--gold));
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-link:hover {
+    color: hsl(var(--gold));
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .section-padding {
+    @apply py-20 md:py-28 lg:py-32;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
