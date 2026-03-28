@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "installCommand": "cd arome-luxury-perfume-experience-main && npm install --include=dev",
   "buildCommand": "cd arome-luxury-perfume-experience-main && npm run build",
   "outputDirectory": "arome-luxury-perfume-experience-main/dist",
   "rewrites": [
