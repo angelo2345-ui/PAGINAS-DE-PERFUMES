@@ -1,14 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "arome-luxury-perfume-experience-main/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "arome-luxury-perfume-experience-main/dist"
-      }
-    }
-  ],
+  "buildCommand": "cd arome-luxury-perfume-experience-main && npm run build",
+  "outputDirectory": "arome-luxury-perfume-experience-main/dist",
   "rewrites": [
     {
       "source": "/(.*)",
