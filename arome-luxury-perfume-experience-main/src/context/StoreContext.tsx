@@ -41,6 +41,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   useEffect(() => {
+    if (!auth) return;
     return onAuthStateChanged(auth, (user) => {
       if (!user) {
         setIsAdmin(false);
@@ -55,6 +56,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [adminEmail]);
 
   useEffect(() => {
+    if (!db) return;
     const productsUnsub = onSnapshot(collection(db, "products"), async (snapshot) => {
       if (snapshot.empty) {
         if (seedingRef.current.products) return;
@@ -93,7 +95,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, []);
 
+  const createId = () => {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+    return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  };
+
   const addProduct = async (product: Omit<Product, "id">) => {
+    if (!db) {
+      const newProduct: Product = { ...product, id: createId() };
+      setProducts((prev) => [newProduct, ...prev]);
+      return;
+    }
     const docRef = doc(collection(db, "products"));
     const newProduct: Product = { ...product, id: docRef.id };
     await setDoc(docRef, newProduct);
@@ -102,14 +114,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateProduct = async (id: string, updates: Partial<Product>) => {
     const { id: _ignored, ...rest } = updates;
     const toApply = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined));
+    if (!db) {
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...toApply } as Product : p)));
+      return;
+    }
     await updateDoc(doc(db, "products", id), toApply);
   };
 
   const deleteProduct = async (id: string) => {
+    if (!db) {
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      return;
+    }
     await deleteDoc(doc(db, "products", id));
   };
 
   const addBlogPost = async (post: Omit<BlogPost, "id">) => {
+    if (!db) {
+      const newPost: BlogPost = { ...post, id: createId() };
+      setBlogPosts((prev) => [newPost, ...prev]);
+      return;
+    }
     const docRef = doc(collection(db, "blogPosts"));
     const newPost: BlogPost = { ...post, id: docRef.id };
     await setDoc(docRef, newPost);
@@ -118,20 +143,33 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateBlogPost = async (id: string, updates: Partial<BlogPost>) => {
     const { id: _ignored, ...rest } = updates;
     const toApply = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined));
+    if (!db) {
+      setBlogPosts((prev) => prev.map((p) => (p.id === id ? { ...p, ...toApply } as BlogPost : p)));
+      return;
+    }
     await updateDoc(doc(db, "blogPosts", id), toApply);
   };
 
   const deleteBlogPost = async (id: string) => {
+    if (!db) {
+      setBlogPosts((prev) => prev.filter((p) => p.id !== id));
+      return;
+    }
     await deleteDoc(doc(db, "blogPosts", id));
   };
 
   const addContact = async (contact: Omit<ContactMessage, "id">) => {
-    const docRef = doc(collection(db, "contacts"));
-    const newContact: ContactMessage = { ...contact, id: docRef.id };
+    const newContact: ContactMessage = { ...contact, id: createId() };
+    if (!db) {
+      setContacts((prev) => [newContact, ...prev]);
+      return;
+    }
+    const docRef = doc(collection(db, "contacts", newContact.id));
     await setDoc(docRef, newContact);
   };
 
   const login = async (email: string, password: string) => {
+    if (!auth) return false;
     const result = await signInWithEmailAndPassword(auth, email, password);
     if (adminEmail && result.user.email !== adminEmail) {
       await signOut(auth);
@@ -143,6 +181,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const logout = async () => {
+    if (!auth) return;
     await signOut(auth);
     setIsAdmin(false);
   };
